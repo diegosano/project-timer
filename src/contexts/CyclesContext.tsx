@@ -12,7 +12,11 @@ import {
   interruptCurrentCycleAction,
   markCurrentCycleAsFinishedAction
 } from '../reducers/cycles/actions'
-import { Cycle, cyclesReducer } from '../reducers/cycles/reducers'
+import {
+  Cycle,
+  cyclesInitializer,
+  cyclesReducer
+} from '../reducers/cycles/reducers'
 
 interface CreateCycleData {
   task: string;
@@ -36,7 +40,7 @@ interface CyclesContextProviderProps {
   children: ReactNode;
 }
 
-const cycleReducerInitialState = {
+const cyclesInitialState = {
   cycles: [],
   activeCycleId: null
 }
@@ -46,16 +50,8 @@ export function CyclesContextProvider ({
 }: CyclesContextProviderProps) {
   const [cyclesState, dispatch] = useReducer(
     cyclesReducer,
-    cycleReducerInitialState,
-    () => {
-      const storedStateAsJSON = localStorage.getItem(
-        '@project-timer:cycles-state-1.0.0'
-      )
-
-      if (storedStateAsJSON) {
-        return JSON.parse(storedStateAsJSON)
-      }
-    }
+    cyclesInitialState,
+    cyclesInitializer
   )
 
   const { cycles, activeCycleId } = cyclesState

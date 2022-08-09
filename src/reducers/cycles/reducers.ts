@@ -58,3 +58,15 @@ export function cyclesReducer (state: CyclesState, action: any) {
       return state
   }
 }
+
+export function cyclesInitializer (initialState: CyclesState) {
+  const storedStateAsJSON = localStorage.getItem(
+    '@project-timer:cycles-state-1.0.0'
+  )
+
+  if (storedStateAsJSON) {
+    return JSON.parse(storedStateAsJSON)
+  }
+
+  return initialState
+}
