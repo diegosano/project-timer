@@ -49,7 +49,7 @@ export function CyclesContextProvider ({
     cycleReducerInitialState,
     () => {
       const storedStateAsJSON = localStorage.getItem(
-        '@timer:cycles-state-1.0.0'
+        '@project-timer:cycles-state-1.0.0'
       )
 
       if (storedStateAsJSON) {
@@ -71,7 +71,7 @@ export function CyclesContextProvider ({
   useEffect(() => {
     const stateJSON = JSON.stringify(cyclesState)
 
-    localStorage.setItem('@timer:cycles-state-1.0.0', stateJSON)
+    localStorage.setItem('@project-timer:cycles-state-1.0.0', stateJSON)
   }, [cyclesState])
 
   function markCurrentCycleAsFinished () {
