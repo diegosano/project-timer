@@ -1,7 +1,13 @@
-import { createContext, ReactNode, useReducer, useState } from 'react'
+import { differenceInSeconds } from 'date-fns'
+import {
+  createContext,
+  ReactNode,
+  useEffect,
+  useReducer,
+  useState
+} from 'react'
 
 import {
-  ActionTypes,
   addNewCycleAction,
   interruptCurrentCycleAction,
   markCurrentCycleAsFinishedAction
@@ -40,9 +46,33 @@ export function CyclesContextProvider ({
 }: CyclesContextProviderProps) {
   const [cyclesState, dispatch] = useReducer(
     cyclesReducer,
-    cycleReducerInitialState
+    cycleReducerInitialState,
+    () => {
+      const storedStateAsJSON = localStorage.getItem(
+        '@timer:cycles-state-1.0.0'
+      )
+
+      if (storedStateAsJSON) {
+        return JSON.parse(storedStateAsJSON)
+      }
+    }
   )
-  const [amountSecondsPassed, setAmountSecondsPassed] = useState(0)
+
+  const { cycles, activeCycleId } = cyclesState
+  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
+
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState(() => {
+    if (activeCycle) {
+      return differenceInSeconds(new Date(), new Date(activeCycle.startDate))
+    }
+    return 0
+  })
+
+  useEffect(() => {
+    const stateJSON = JSON.stringify(cyclesState)
+
+    localStorage.setItem('@timer:cycles-state-1.0.0', stateJSON)
+  }, [cyclesState])
 
   function markCurrentCycleAsFinished () {
     dispatch(markCurrentCycleAsFinishedAction())
@@ -69,9 +99,6 @@ export function CyclesContextProvider ({
   function setSecondsPassed (seconds: number) {
     setAmountSecondsPassed(seconds)
   }
-
-  const { cycles, activeCycleId } = cyclesState
-  const activeCycle = cycles.find((cycle) => cycle.id === activeCycleId)
 
   return (
     <CyclesContext.Provider
